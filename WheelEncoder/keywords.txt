@@ -1,0 +1,27 @@
+#######################################
+# Syntax Coloring Map Servo
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+WheelEncoder	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+getPosition	KEYWORD2
+getAngle	KEYWORD2
+getTranslationSpeed	KEYWORD2
+process	KEYWORD2
+displayMeasure	KEYWORD2
+
+
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+LITERAL1	CENTIMETER
+LITERAL1	METER
