@@ -18,7 +18,6 @@ Examples can be opened from the Arduino IDE
 
 ## Third-Party Dependencies (Provided)
 
-* [TimerOne v7](http://playground.arduino.cc/Code/Timer1)
 * [PIDLibrary V0.1++](http://playground.arduino.cc/Code/PIDLibrary)
 * [Encoder V1.2++](https://www.pjrc.com/teensy/td_libs_Encoder.html) 
 
