@@ -8,39 +8,42 @@
 #include <PID_v1.h>
 #include <WheelControled.h>
 
-WheelControled wheelControled;
+Hbridge hbridge(4,5,9); // input 1 and 2 = pin 4 and 5 & enable is the pin 2 
+WheelEncoder wheelEncoder(19,18); // pin 18 and 19 to use high performance (interrupt mode) DO NOT USE PIN 13  
 
-double demandedPosition;
-double currentPosition;
-double speedCommand;
+WheelControled speedLoop(&hbridge, &wheelEncoder) ;
 
-PID myPID = PID(&currentPosition , &speedCommand , &demandedPosition , 5 , 1 , 0 , DIRECT);
+double demandedPosition = 0;
+double currentPosition = 0 ;
+double speedCommand = 0;
+
+PID positionLoop = PID(&currentPosition , &speedCommand , &demandedPosition , 5 , 1 , 0 , DIRECT); // Position
+
+int sampleTime = 40; // ms
 
 void setup()
 {
  // Serial for debugging
  Serial.begin(9600);
- myPID.SetSampleTime(DEFAULT_SAMPLE_TIME); // see configuration file
- myPID.SetMode(AUTOMATIC);
- myPID.SetOutputLimits(-100,100);
- 
- demandedPosition = 0;
- currentPosition = 0;
- speedCommand = 0;
- 
 
- demandedPosition = 25 ;
+ speedLoop.setup(360, 2.86 * 0.01 , CENTIMETER, sampleTime , 1) ;// encoder ticks per revolution - radius of the wheel (m) - sampleTime(ms) - pwm Limit (%)
+ speedLoop.setTuningParameter(0.5952 , 0.001 , 0.0) ; // set Kp , KI and KD of speed regulation
+
+ positionLoop.SetSampleTime(sampleTime);
+ positionLoop.SetMode(AUTOMATIC);
+ positionLoop.SetOutputLimits(-100,100); // max speed command in unit/s
+ 
+ demandedPosition = 25 ; // in radius unit
  
 }
 
 void loop()
 {
 
-  currentPosition = wheelControled.getPosition();
-  myPID.Compute();
-  wheelControled.setSpeed(speedCommand);
-  wheelControled.process(); 
+  currentPosition = speedLoop.getPosition();
+  positionLoop.Compute();
+  speedLoop.setSpeed(speedCommand);
+  speedLoop.process(); 
   
  }
  
-
