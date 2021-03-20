@@ -5,15 +5,17 @@
 #include <PID_v1.h>
 
 // Sensor and actuator
-Hbridge hbridge; // input 1 in pin 4 , input 2 in pin 5 , enable in pin 2
+Hbridge hbridge(4,5,9); // input 1 in pin 4 , input 2 in pin 5 , enable in pin 2
 WheelEncoder wheelEncoder(19,18); // pin 18 and 19 used
 
 
 //Define Variables we'll be connecting to
-double desiredSpeed, measuredSpeed, outputCommand;
+double desiredSpeed = 0;
+double measuredSpeed = 0 ;
+double outputCommand = 0;
 
 //Specify the links and initial tuning parameters
-PID myPID(&measuredSpeed, &outputCommand, &desiredSpeed, 20 , 10 , 0 , DIRECT);
+PID speedLoop(&measuredSpeed, &outputCommand, &desiredSpeed, 20 , 10 , 0 , DIRECT); //KP, KI, KD
 
 void setup()
 {
@@ -28,16 +30,16 @@ void setup()
  
   wheelEncoder.setup(360 , 2.86 * 0.01 ); // encoder ticks per revolution & radius of the wheel
   wheelEncoder.setUnit(CENTIMETER);
-  wheelEncoder.setSampleTime(20); // sample time of encoder in ms => give the precision of velocity
+  wheelEncoder.setSampleTime(40); // sample time of encoder in ms => give the precision of velocity
   
   
   //initialize the variables we're linked to
   desiredSpeed = 100 ; // in wheel encoder unit 
 
   //turn the PID on
-  myPID.SetMode(AUTOMATIC);
-  myPID.SetSampleTime(30); // in ms
-  myPID.SetOutputLimits(-1,1); // correspond to the limite of pwm rating
+  speedLoop.SetMode(AUTOMATIC);
+  speedLoop.SetSampleTime(40); // in ms
+  speedLoop.SetOutputLimits(-1,1); // correspond to the limite of pwm rating
 }
 
 void loop()
@@ -48,8 +50,6 @@ void loop()
   measuredSpeed = wheelEncoder.getTranslationSpeed();
  
   // Command
-  myPID.Compute(); 
+  speedLoop.Compute(); 
   hbridge.setCmd(outputCommand);
  }
-
-
